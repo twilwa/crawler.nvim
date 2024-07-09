@@ -16,19 +16,13 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 {
-  "yourusername/crawler.nvim",
+  'yourusername/crawler.nvim',
+  dependencies = { 'nvim-lua/plenary.nvim' },
   config = function()
     require("crawler").setup({
-      -- Add any configuration options here
-      render_markdown = true,
-      render_json = false,
-      search_engine = true,
+      -- Add any configuration options here (optional)
     })
   end,
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-  },
-  cmd = { "CrawlMarkdown", "CrawlJson", "CrawlSearch" },
 }
 ```
 
@@ -38,9 +32,9 @@ You can configure the plugin by passing options to the `setup` function:
 
 ```lua
 require("crawler").setup({
-  render_markdown = true,  -- Enable markdown rendering
-  render_json = false,     -- Enable JSON rendering
-  search_engine = true,    -- Enable search engine functionality
+  render_markdown = true,  -- Enable markdown rendering (default: true)
+  render_json = false,     -- Enable JSON rendering (default: false)
+  search_engine = true,    -- Enable search engine functionality (default: true)
 })
 ```
 
@@ -52,40 +46,49 @@ The plugin provides three main commands:
 - `:CrawlJson`: Crawl a URL and render it to JSON
 - `:CrawlSearch`: Perform a search query
 
-You can use these commands in normal mode or visual mode (to use the selected text as input).
+These commands can be used in normal mode (prompting for input) or visual mode (using the selected text as input).
 
-### Key Mappings
+### Default Key Mappings
 
-Add these to your Neovim configuration to set up key mappings:
+The plugin comes with the following default key mappings:
 
-```lua
-vim.api.nvim_set_keymap('n', '<leader>cm', ':CrawlMarkdown<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>cj', ':CrawlJson<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>cs', ':CrawlSearch<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<leader>cm', ':CrawlMarkdown<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<leader>cj', ':CrawlJson<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<leader>cs', ':CrawlSearch<CR>', { noremap = true, silent = true })
-```
+- Normal mode:
+  - `<leader>lm`: Crawl and render to Markdown
+  - `<leader>lj`: Crawl and render to JSON
+  - `<leader>ls`: Perform a search query
+
+- Visual mode:
+  - `<leader>lm`: Crawl selection and render to Markdown
+  - `<leader>lj`: Crawl selection and render to JSON
+  - `<leader>ls`: Search using selection
+
+You can override these mappings in your Neovim configuration if desired.
 
 ### Examples:
 
 1. Process a single URL and render to Markdown:
    ```
-   <leader>cm
-   https://example.com
+   :CrawlMarkdown
+   > Enter URL or search query: https://example.com
    ```
 
 2. Process multiple URLs and render to JSON:
    ```
-   <leader>cj
-   https://example.com, https://another-example.com
+   :CrawlJson
+   > Enter URL or search query: https://example.com, https://another-example.com
    ```
 
 3. Perform a search:
    ```
-   <leader>cs
-   neovim lua plugins
+   :CrawlSearch
+   > Enter search query: neovim lua plugins
    ```
+
+4. Using visual mode:
+   - Select a URL or text in visual mode
+   - Press `<leader>lm` to crawl and render to Markdown
+   - Press `<leader>lj` to crawl and render to JSON
+   - Press `<leader>ls` to search using the selected text
 
 ## Integration with Other Tools
 

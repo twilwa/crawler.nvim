@@ -76,10 +76,21 @@ local function process_search(query)
   insert_into_buffer(response.body)
 end
 
-local function crawl_with_type(render_type)
-  local input = get_visual_selection()
+local function get_input(prompt)
+  local input = vim.fn.mode() == 'v' and get_visual_selection() or ''
   if input == '' then
-    input = vim.fn.input("Enter URL, multiple URLs (comma-separated), or search query: ")
+    input = vim.fn.input(prompt)
+  end
+  return input
+end
+
+local function crawl_with_type(render_type)
+  local prompt = render_type == 'search' and "Enter search query: " or "Enter URL or search query: "
+  local input = get_input(prompt)
+
+  if input == '' then
+    print("No input provided")
+    return
   end
 
   if input:find(',') then
@@ -131,5 +142,13 @@ end
 vim.api.nvim_create_user_command('CrawlMarkdown', M.crawl_markdown, {})
 vim.api.nvim_create_user_command('CrawlJson', M.crawl_json, {})
 vim.api.nvim_create_user_command('CrawlSearch', M.crawl_search, {})
+
+-- Set up default keymaps
+vim.api.nvim_set_keymap('n', '<leader>lm', ':CrawlMarkdown<CR>', { noremap = true, silent = true, desc = 'Crawl and render to Markdown' })
+vim.api.nvim_set_keymap('n', '<leader>lj', ':CrawlJson<CR>', { noremap = true, silent = true, desc = 'Crawl and render to JSON' })
+vim.api.nvim_set_keymap('n', '<leader>ls', ':CrawlSearch<CR>', { noremap = true, silent = true, desc = 'Perform a search query' })
+vim.api.nvim_set_keymap('v', '<leader>lm', ':CrawlMarkdown<CR>', { noremap = true, silent = true, desc = 'Crawl selection and render to Markdown' })
+vim.api.nvim_set_keymap('v', '<leader>lj', ':CrawlJson<CR>', { noremap = true, silent = true, desc = 'Crawl selection and render to JSON' })
+vim.api.nvim_set_keymap('v', '<leader>ls', ':CrawlSearch<CR>', { noremap = true, silent = true, desc = 'Search using selection' })
 
 return M
