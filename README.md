@@ -1,13 +1,14 @@
 # crawler.nvim
 
-A Neovim plugin for crawling web pages, rendering them to Markdown or JSON, and inserting the content directly into your buffer. It also supports search functionality.
+A Neovim plugin for crawling web pages, rendering them to Markdown or JSON, and inserting the content into new buffers. It also supports asynchronous search functionality.
 
 ## Features
 
 - Process single URLs, multiple URLs, or search queries
 - Render web pages to Markdown or JSON
-- Insert processed content directly into your Neovim buffer
+- Insert processed content into new Neovim buffers
 - Supports visual selection or manual input
+- Asynchronous search functionality
 - Configurable options for rendering and search functionality
 
 ## Installation
@@ -28,12 +29,12 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ## Configuration
 
-You can configure the plugin by passing options to the `setup` function:
+You can configure the plugin by passing options to the `setup` function. The default configuration is:
 
 ```lua
 require("crawler").setup({
   render_markdown = true,  -- Enable markdown rendering (default: true)
-  render_json = false,     -- Enable JSON rendering (default: false)
+  render_json = true,      -- Enable JSON rendering (default: true)
   search_engine = true,    -- Enable search engine functionality (default: true)
 })
 ```
@@ -44,7 +45,7 @@ The plugin provides three main commands:
 
 - `:CrawlMarkdown`: Crawl a URL and render it to Markdown
 - `:CrawlJson`: Crawl a URL and render it to JSON
-- `:CrawlSearch`: Perform a search query
+- `:CrawlSearch`: Perform an asynchronous search query
 
 These commands can be used in normal mode (prompting for input) or visual mode (using the selected text as input).
 
@@ -78,17 +79,23 @@ You can override these mappings in your Neovim configuration if desired.
    > Enter URL or search query: https://example.com, https://another-example.com
    ```
 
-3. Perform a search:
+3. Perform an asynchronous search:
    ```
    :CrawlSearch
    > Enter search query: neovim lua plugins
    ```
+   The search will run in the background, and results will be displayed in a new buffer when ready.
 
 4. Using visual mode:
    - Select a URL or text in visual mode
    - Press `<leader>lm` to crawl and render to Markdown
    - Press `<leader>lj` to crawl and render to JSON
    - Press `<leader>ls` to search using the selected text
+
+## Behavior
+
+- All crawled content and search results are opened in new buffers.
+- Search queries are processed asynchronously, allowing you to continue working while waiting for results.
 
 ## Integration with Other Tools
 

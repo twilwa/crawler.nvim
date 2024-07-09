@@ -7,7 +7,7 @@ local job = require('plenary.job')
 ---@field search_engine boolean
 local config = {
   render_markdown = true,
-  render_json = false,
+  render_json = true,
   search_engine = true,
 }
 
@@ -54,9 +54,9 @@ local function process_url(url, render_type)
 end
 
 local function insert_into_buffer(content)
-  local current_buf = vim.api.nvim_get_current_buf()
-  local current_line = vim.api.nvim_win_get_cursor(0)[1]
-  vim.api.nvim_buf_set_lines(current_buf, current_line, current_line, false, vim.split(content, '\n'))
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(content, '\n'))
+  vim.api.nvim_command('sbuffer ' .. buf)
 end
 
 local function process_sitemap(url)
@@ -66,14 +66,25 @@ end
 
 local function process_search(query)
   local search_url = 's.jina.ai/' .. vim.fn.shellescape(query)
-  local response = curl.get(search_url)
   
-  if response.status ~= 200 then
-    print("Error performing search: " .. query)
-    return
-  end
+  job:new({
+    command = "curl",
+    args = { search_url },
+    on_exit = function(j, return_val)
+      if return_val == 0 then
+        local result = table.concat(j:result(), "\n")
+        vim.schedule(function()
+          insert_into_buffer(result)
+        end)
+      else
+        vim.schedule(function()
+          print("Error performing search: " .. query)
+        end)
+      end
+    end,
+  }):start()
 
-  insert_into_buffer(response.body)
+  print("Search in progress. Results will be displayed in a new buffer when ready.")
 end
 
 local function get_input(prompt)
