@@ -43,7 +43,7 @@ describe("crawler", function()
 
     before_each(function()
       mock_curl = {
-        get = stub.new()
+        get = stub.new(),
       }
       mock_job = {}
       mock_vim = {
@@ -54,7 +54,7 @@ describe("crawler", function()
         api = {
           nvim_buf_set_lines = stub.new(),
           nvim_get_current_buf = stub.new().returns(1),
-          nvim_win_get_cursor = stub.new().returns({1, 0}),
+          nvim_win_get_cursor = stub.new().returns({ 1, 0 }),
         },
       }
 
@@ -111,5 +111,3 @@ describe("crawler", function()
   end)
 end)
 
--- Print the status of vim.go.loadplugins at the end of all tests
-print("Final vim.go.loadplugins status:", vim.go.loadplugins)

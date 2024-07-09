@@ -43,10 +43,13 @@ end
 local function process_url(url, render_type)
   local prefix = render_type == 'markdown' and 'r.jina.ai/' or 'jsondr.com/'
   local full_url = prefix .. url
+  print("Fetching URL: " .. full_url)  -- Debug log
   local response = curl.get(full_url)
   
+  print("Response status: " .. response.status)  -- Debug log
   if response.status ~= 200 then
     print("Error fetching URL: " .. url)
+    print("Response body: " .. vim.inspect(response.body))  -- Debug log
     return nil
   end
 
@@ -113,6 +116,8 @@ local function crawl_with_type(render_type)
         if content then
           insert_into_buffer(content)
         end
+      else
+        print("Invalid URL: " .. url)  -- Debug log
       end
     end
   elseif is_url(input) then
