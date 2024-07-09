@@ -1,47 +1,75 @@
-# A Neovim Plugin Template
+# crawler.nvim
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ellisonleao/nvim-plugin-template/lint-test.yml?branch=main&style=for-the-badge)
-![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
+A Neovim plugin for crawling web pages and inserting their content into your buffer.
 
-A template repository for Neovim plugins.
+## Features
 
-## Using it
+- Process single URLs, multiple URLs, or search queries
+- Render web pages to Markdown or JSON
+- Insert processed content directly into your Neovim buffer
+- Supports visual selection or manual input
+- Configurable options for rendering and search functionality
 
-Via `gh`:
+## Installation
 
+Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
+
+```lua
+use {
+  'yourusername/crawler.nvim',
+  requires = {
+    'nvim-lua/plenary.nvim'
+  }
+}
 ```
-$ gh repo create my-plugin -p ellisonleao/nvim-plugin-template
+
+## Configuration
+
+Add the following to your Neovim configuration:
+
+```lua
+require('crawler').setup({
+  render_markdown = true,  -- Set to false to disable markdown rendering
+  render_json = false,     -- Set to true to enable JSON rendering
+  search_engine = true,    -- Set to false to disable search engine functionality
+})
 ```
 
-Via github web page:
+## Usage
 
-Click on `Use this template`
+- In normal mode, press `<leader>c` and then enter a URL or search query when prompted.
+- In visual mode, select text (URL or search query) and press `<leader>c`.
+- Use the `:Crawl` command followed by a URL or search query.
 
-![](https://docs.github.com/assets/cb-36544/images/help/repository/use-this-template-button.png)
+### Examples:
 
-## Features and structure
+1. Process a single URL:
+   ```
+   <leader>c
+   https://example.com
+   ```
 
-- 100% Lua
-- Github actions for:
-  - running tests using [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) and [busted](https://olivinelabs.com/busted/)
-  - check for formatting errors (Stylua)
-  - vimdocs autogeneration from README.md file
-  - luarocks release (LUAROCKS_API_KEY secret configuration required)
+2. Process multiple URLs:
+   ```
+   <leader>c
+   https://example.com, https://another-example.com
+   ```
 
-### Plugin structure
+3. Perform a search:
+   ```
+   <leader>c
+   neovim lua plugins
+   ```
 
-```
-.
-├── lua
-│   ├── plugin_name
-│   │   └── module.lua
-│   └── plugin_name.lua
-├── Makefile
-├── plugin
-│   └── plugin_name.lua
-├── README.md
-├── tests
-│   ├── minimal_init.lua
-│   └── plugin_name
-│       └── plugin_name_spec.lua
-```
+## Requirements
+
+- Neovim >= 0.7.0
+- [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
+
+## License
+
+MIT
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
