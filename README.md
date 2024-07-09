@@ -124,3 +124,12 @@ MIT
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Acknowledgements
+
+This plugin would not be possible without the following projects:
+
+- [yoheinakajima/jsondr](https://github.com/yoheinakajima/jsondr): A powerful tool for rendering JSON data, which is used in our JSON rendering functionality.
+- [Jina Reader API](https://jina.ai/reader): The Jina Reader API is used for our Markdown rendering capabilities. For more information on how to use the Jina Reader API, please refer to their [documentation](https://jina.ai/reader).
+
+We are grateful for these tools and APIs that have made crawler.nvim possible.

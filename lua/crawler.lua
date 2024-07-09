@@ -26,6 +26,10 @@ local function is_url(str)
   return str:match("^https?://") ~= nil
 end
 
+local function strip_protocol(url)
+  return url:gsub("^https?://", "")
+end
+
 local function get_visual_selection()
   local s_start = vim.fn.getpos("'<")
   local s_end = vim.fn.getpos("'>")
@@ -42,12 +46,13 @@ end
 
 local function process_url(url, render_type)
   local prefix, full_url
+  local stripped_url = strip_protocol(url)
   if render_type == 'markdown' then
     prefix = 'https://r.jina.ai/'
-    full_url = prefix .. url:gsub("^https?://", "")
+    full_url = prefix .. stripped_url
   else
     prefix = 'https://jsondr.com/'
-    full_url = prefix .. url
+    full_url = prefix .. stripped_url
   end
   
   print("Fetching URL: " .. full_url)  -- Debug log
