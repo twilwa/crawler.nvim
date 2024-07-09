@@ -41,8 +41,8 @@ local function get_visual_selection()
 end
 
 local function process_url(url, render_type)
-  local prefix = render_type == 'markdown' and 'r.jina.ai/' or 'jsondr.com/'
-  local full_url = prefix .. url
+  local prefix = render_type == 'markdown' and 'https://r.jina.ai/' or 'https://jsondr.com/'
+  local full_url = prefix .. url:gsub("^https?://", "")
   print("Fetching URL: " .. full_url)  -- Debug log
   local response = curl.get(full_url)
   
@@ -68,7 +68,7 @@ local function process_sitemap(url)
 end
 
 local function process_search(query)
-  local search_url = 's.jina.ai/' .. vim.fn.shellescape(query)
+  local search_url = 'https://s.jina.ai/' .. vim.fn.shellescape(query)
   
   job:new({
     command = "curl",
