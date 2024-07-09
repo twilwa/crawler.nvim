@@ -22,10 +22,6 @@ M.setup = function(args)
   M.config = vim.tbl_deep_extend("force", M.config, args or {})
 end
 
-local function is_url(str)
-  return str:match("^https?://") ~= nil
-end
-
 local function strip_protocol(url)
   return url:gsub("^https?://", "")
 end
@@ -121,7 +117,7 @@ local function get_input(prompt)
 end
 
 local function crawl_with_type(render_type)
-  local prompt = render_type == 'search' and "Enter search query: " or "Enter URL or search query: "
+  local prompt = render_type == 'search' and "Enter search query: " or "Enter URL: "
   local input = get_input(prompt)
 
   if input == '' then
@@ -133,23 +129,11 @@ local function crawl_with_type(render_type)
     -- Multiple URLs
     for url in input:gmatch("[^,]+") do
       url = url:match("^%s*(.-)%s*$") -- Trim whitespace
-      if is_url(url) then
-        local content = process_url(url, render_type)
-        if content then
-          insert_into_buffer(content)
-        end
-      else
-        print("Invalid URL: " .. url)  -- Debug log
-      end
-    end
-  elseif is_url(input) then
-    -- Single URL
-    if input:match("sitemap%.xml$") then
-      process_sitemap(input)
-    else
-      local content = process_url(input, render_type)
+      local content = process_url(url, render_type)
       if content then
         insert_into_buffer(content)
+      else
+        print("Failed to process URL: " .. url .. ". Please check that the URL exists.")
       end
     end
   elseif render_type == 'search' then
@@ -160,7 +144,17 @@ local function crawl_with_type(render_type)
       print("Search engine functionality is disabled")
     end
   else
-    print("Invalid input for " .. render_type .. " rendering")
+    -- Single URL
+    if input:match("sitemap%.xml$") then
+      process_sitemap(input)
+    else
+      local content = process_url(input, render_type)
+      if content then
+        insert_into_buffer(content)
+      else
+        print("Failed to process URL: " .. input .. ". Please check that the URL exists.")
+      end
+    end
   end
 end
 
