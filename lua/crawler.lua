@@ -41,19 +41,36 @@ local function get_visual_selection()
 end
 
 local function process_url(url, render_type)
-  local prefix = render_type == 'markdown' and 'https://r.jina.ai/' or 'https://jsondr.com/'
-  local full_url = prefix .. url:gsub("^https?://", "")
-  print("Fetching URL: " .. full_url)  -- Debug log
-  local response = curl.get(full_url)
+  local prefix, full_url
+  if render_type == 'markdown' then
+    prefix = 'https://r.jina.ai/'
+    full_url = prefix .. url:gsub("^https?://", "")
+  else
+    prefix = 'https://jsondr.com/'
+    full_url = prefix .. url
+  end
   
-  print("Response status: " .. response.status)  -- Debug log
-  if response.status ~= 200 then
-    print("Error fetching URL: " .. url)
-    print("Response body: " .. vim.inspect(response.body))  -- Debug log
+  print("Fetching URL: " .. full_url)  -- Debug log
+  
+  local ok, response = pcall(curl.get, full_url)
+  
+  if not ok then
+    print("Error making request: " .. tostring(response))
     return nil
   end
+  
+  print("Response status: " .. tostring(response.status))  -- Debug log
+  if response.status ~= 200 then
+    print("Warning: Non-200 status code received: " .. tostring(response.status))
+  end
 
-  return response.body
+  if response.body then
+    print("Response body length: " .. tostring(#response.body))  -- Debug log
+    return response.body
+  else
+    print("Error: Empty response body")
+    return nil
+  end
 end
 
 local function insert_into_buffer(content)
