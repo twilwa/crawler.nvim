@@ -76,7 +76,7 @@ local function process_search(query)
   insert_into_buffer(response.body)
 end
 
-M.crawl = function()
+local function crawl_with_type(render_type)
   local input = get_visual_selection()
   if input == '' then
     input = vim.fn.input("Enter URL, multiple URLs (comma-separated), or search query: ")
@@ -87,7 +87,7 @@ M.crawl = function()
     for url in input:gmatch("[^,]+") do
       url = url:match("^%s*(.-)%s*$") -- Trim whitespace
       if is_url(url) then
-        local content = process_url(url, M.config.render_json and 'json' or 'markdown')
+        local content = process_url(url, render_type)
         if content then
           insert_into_buffer(content)
         end
@@ -98,26 +98,38 @@ M.crawl = function()
     if input:match("sitemap%.xml$") then
       process_sitemap(input)
     else
-      local content = process_url(input, M.config.render_json and 'json' or 'markdown')
+      local content = process_url(input, render_type)
       if content then
         insert_into_buffer(content)
       end
     end
-  else
+  elseif render_type == 'search' then
     -- Assume it's a search query
     if M.config.search_engine then
       process_search(input)
     else
       print("Search engine functionality is disabled")
     end
+  else
+    print("Invalid input for " .. render_type .. " rendering")
   end
 end
 
--- Set up the plugin command
-vim.api.nvim_create_user_command('Crawl', M.crawl, {})
+M.crawl_markdown = function()
+  crawl_with_type('markdown')
+end
 
--- Set up the key mapping
-vim.api.nvim_set_keymap('n', '<leader>c', ':Crawl<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<leader>c', ':Crawl<CR>', { noremap = true, silent = true })
+M.crawl_json = function()
+  crawl_with_type('json')
+end
+
+M.crawl_search = function()
+  crawl_with_type('search')
+end
+
+-- Set up the plugin commands
+vim.api.nvim_create_user_command('CrawlMarkdown', M.crawl_markdown, {})
+vim.api.nvim_create_user_command('CrawlJson', M.crawl_json, {})
+vim.api.nvim_create_user_command('CrawlSearch', M.crawl_search, {})
 
 return M

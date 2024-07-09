@@ -1,6 +1,6 @@
 # crawler.nvim
 
-A Neovim plugin for crawling web pages and inserting their content into your buffer.
+A Neovim plugin for crawling web pages, rendering them to Markdown or JSON, and inserting the content directly into your buffer. It also supports search functionality.
 
 ## Features
 
@@ -12,54 +12,95 @@ A Neovim plugin for crawling web pages and inserting their content into your buf
 
 ## Installation
 
-Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
+Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
-use {
-  'yourusername/crawler.nvim',
-  requires = {
-    'nvim-lua/plenary.nvim'
-  }
+{
+  "yourusername/crawler.nvim",
+  config = function()
+    require("crawler").setup({
+      -- Add any configuration options here
+      render_markdown = true,
+      render_json = false,
+      search_engine = true,
+    })
+  end,
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+  },
+  cmd = { "CrawlMarkdown", "CrawlJson", "CrawlSearch" },
 }
 ```
 
 ## Configuration
 
-Add the following to your Neovim configuration:
+You can configure the plugin by passing options to the `setup` function:
 
 ```lua
-require('crawler').setup({
-  render_markdown = true,  -- Set to false to disable markdown rendering
-  render_json = false,     -- Set to true to enable JSON rendering
-  search_engine = true,    -- Set to false to disable search engine functionality
+require("crawler").setup({
+  render_markdown = true,  -- Enable markdown rendering
+  render_json = false,     -- Enable JSON rendering
+  search_engine = true,    -- Enable search engine functionality
 })
 ```
 
 ## Usage
 
-- In normal mode, press `<leader>c` and then enter a URL or search query when prompted.
-- In visual mode, select text (URL or search query) and press `<leader>c`.
-- Use the `:Crawl` command followed by a URL or search query.
+The plugin provides three main commands:
+
+- `:CrawlMarkdown`: Crawl a URL and render it to Markdown
+- `:CrawlJson`: Crawl a URL and render it to JSON
+- `:CrawlSearch`: Perform a search query
+
+You can use these commands in normal mode or visual mode (to use the selected text as input).
+
+### Key Mappings
+
+Add these to your Neovim configuration to set up key mappings:
+
+```lua
+vim.api.nvim_set_keymap('n', '<leader>cm', ':CrawlMarkdown<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>cj', ':CrawlJson<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>cs', ':CrawlSearch<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<leader>cm', ':CrawlMarkdown<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<leader>cj', ':CrawlJson<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<leader>cs', ':CrawlSearch<CR>', { noremap = true, silent = true })
+```
 
 ### Examples:
 
-1. Process a single URL:
+1. Process a single URL and render to Markdown:
    ```
-   <leader>c
+   <leader>cm
    https://example.com
    ```
 
-2. Process multiple URLs:
+2. Process multiple URLs and render to JSON:
    ```
-   <leader>c
+   <leader>cj
    https://example.com, https://another-example.com
    ```
 
 3. Perform a search:
    ```
-   <leader>c
+   <leader>cs
    neovim lua plugins
    ```
+
+## Integration with Other Tools
+
+crawler.nvim is particularly useful when used in conjunction with other plugins and tools that leverage Neovim buffers for various purposes:
+
+### LLM Integration
+
+- [aider.nvim](https://github.com/joshuavial/aider.nvim): Use crawler.nvim to fetch web content and feed it directly into aider.nvim for AI-assisted coding and documentation.
+- [llm.nvim](https://github.com/huggingface/llm.nvim): Combine crawler.nvim with llm.nvim to pull web content and use it for generating or enhancing documentation with the power of large language models.
+
+### Data Processing
+
+- [glazed](https://github.com/go-go-golems/glazed): Use crawler.nvim to pull structured data from web pages, then process and transform this data using glazed CLI tools directly within Neovim.
+
+These integrations allow you to seamlessly incorporate web content into your workflows, whether for documentation, data analysis, or AI-assisted development.
 
 ## Requirements
 
