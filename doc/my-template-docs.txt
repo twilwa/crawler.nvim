@@ -1,69 +1,187 @@
-*my-template-docs.txt*     For Neovim >= 0.8.0    Last change: 2024 January 18
+*my-template-docs.txt*      For Neovim >= 0.8.0      Last change: 2024 July 09
 
 ==============================================================================
 Table of Contents                         *my-template-docs-table-of-contents*
 
-1. A Neovim Plugin Template        |my-template-docs-a-neovim-plugin-template|
-  - Using it              |my-template-docs-a-neovim-plugin-template-using-it|
-  - Features and structure|my-template-docs-a-neovim-plugin-template-features-and-structure|
+1. crawler.nvim                                |my-template-docs-crawler.nvim|
+  - Features                          |my-template-docs-crawler.nvim-features|
+  - Installation                  |my-template-docs-crawler.nvim-installation|
+  - Configuration                |my-template-docs-crawler.nvim-configuration|
+  - Usage                                |my-template-docs-crawler.nvim-usage|
+  - Behavior                          |my-template-docs-crawler.nvim-behavior|
+  - Integration with Other Tools|my-template-docs-crawler.nvim-integration-with-other-tools|
+  - Requirements                  |my-template-docs-crawler.nvim-requirements|
+  - License                            |my-template-docs-crawler.nvim-license|
+  - Contributing                  |my-template-docs-crawler.nvim-contributing|
+  - Acknowledgements          |my-template-docs-crawler.nvim-acknowledgements|
 
 ==============================================================================
-1. A Neovim Plugin Template        *my-template-docs-a-neovim-plugin-template*
+1. crawler.nvim                                *my-template-docs-crawler.nvim*
+
+A Neovim plugin for crawling web pages, rendering them to Markdown or JSON, and
+inserting the content into new buffers. It also supports asynchronous search
+functionality.
 
 
+FEATURES                              *my-template-docs-crawler.nvim-features*
 
-A template repository for Neovim plugins.
+- Process single URLs, multiple URLs, or search queries
+- Render web pages to Markdown or JSON
+- Insert processed content into new Neovim buffers
+- Supports visual selection or manual input
+- Asynchronous search functionality
+- Configurable options for rendering and search functionality
 
 
-USING IT                  *my-template-docs-a-neovim-plugin-template-using-it*
+INSTALLATION                      *my-template-docs-crawler.nvim-installation*
 
-Via `gh`
+Using lazy.nvim <https://github.com/folke/lazy.nvim>
 
->
-    $ gh repo create my-plugin -p ellisonleao/nvim-plugin-template
+>lua
+    {
+      'yourusername/crawler.nvim',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      config = function()
+        require("crawler").setup({
+          -- Add any configuration options here (optional)
+        })
+      end,
+    }
 <
 
-Viagithub web page:
 
-Click on `Use this template`
+CONFIGURATION                    *my-template-docs-crawler.nvim-configuration*
 
+Youcan configure the plugin by passing options to the `setup` function. The
+default configuration is:
 
-
-
-FEATURES AND STRUCTURE*my-template-docs-a-neovim-plugin-template-features-and-structure*
-
-- 100% Lua
-- Github actions for:
-    - running tests using plenary.nvim <https://github.com/nvim-lua/plenary.nvim> and busted <https://olivinelabs.com/busted/>
-    - check for formatting errors (Stylua)
-    - vimdocs autogeneration from README.md file
-    - luarocks release (LUAROCKS_API_KEY secret configuration required)
-
-
-PLUGIN STRUCTURE ~
-
->
-    .
-    ├── lua
-    │   ├── plugin_name
-    │   │   └── module.lua
-    │   └── plugin_name.lua
-    ├── Makefile
-    ├── plugin
-    │   └── plugin_name.lua
-    ├── README.md
-    ├── tests
-    │   ├── minimal_init.lua
-    │   └── plugin_name
-    │       └── plugin_name_spec.lua
+>lua
+    require("crawler").setup({
+      render_markdown = true,  -- Enable markdown rendering (default: true)
+      render_json = true,      -- Enable JSON rendering (default: true)
+      search_engine = true,    -- Enable search engine functionality (default: true)
+    })
 <
 
-==============================================================================
-2. Links                                              *my-template-docs-links*
 
-1. *GitHub Workflow Status*: https://img.shields.io/github/actions/workflow/status/ellisonleao/nvim-plugin-template/lint-test.yml?branch=main&style=for-the-badge
-2. *Lua*: https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua
-3. **: https://docs.github.com/assets/cb-36544/images/help/repository/use-this-template-button.png
+USAGE                                    *my-template-docs-crawler.nvim-usage*
+
+The plugin provides three main commands:
+
+- `:CrawlMarkdown`Crawl a URL and render it to Markdown
+- `:CrawlJson`Crawl a URL and render it to JSON
+- `:CrawlSearch`Perform an asynchronous search query
+
+These commands can be used in normal mode (prompting for input) or visual mode
+(using the selected text as input).
+
+
+DEFAULT KEY MAPPINGS ~
+
+The plugin comes with the following default key mappings:
+
+- Normal mode:
+    - `<leader>lm`Crawl and render to Markdown
+    - `<leader>lj`Crawl and render to JSON
+    - `<leader>ls`Perform a search query
+- Visual mode:
+    - `<leader>lm`Crawl selection and render to Markdown
+    - `<leader>lj`Crawl selection and render to JSON
+    - `<leader>ls`Search using selection
+
+You can override these mappings in your Neovim configuration if desired.
+
+
+EXAMPLES: ~
+
+1. Process a single URL and render to Markdown:
+
+>
+    :CrawlMarkdown
+    > Enter URL or search query: https://example.com
+<
+
+
+2. Process multiple URLs and render to JSON:
+
+>
+    :CrawlJson
+    > Enter URL or search query: https://example.com, https://another-example.com
+<
+
+
+3. Perform an asynchronous search:
+
+>
+    :CrawlSearch
+    > Enter search query: neovim lua plugins
+<
+
+The search will run in the background, and results will be displayed in a new
+buffer when ready.
+
+
+4. Using visual mode:
+
+- Select a URL or text in visual mode
+- Press `<leader>lm` to crawl and render to Markdown
+- Press `<leader>lj` to crawl and render to JSON
+- Press `<leader>ls` to search using the selected text
+
+
+
+
+BEHAVIOR                              *my-template-docs-crawler.nvim-behavior*
+
+- All crawled content and search results are opened in new buffers.
+- Search queries are processed asynchronously, allowing you to continue working while waiting for results.
+
+
+INTEGRATION WITH OTHER TOOLS*my-template-docs-crawler.nvim-integration-with-other-tools*
+
+crawler.nvim is particularly useful when used in conjunction with other plugins
+and tools that leverage Neovim buffers for various purposes:
+
+
+LLM INTEGRATION ~
+
+- aider.nvim <https://github.com/joshuavial/aider.nvim>Use crawler.nvim to fetch web content and feed it directly into aider.nvim for AI-assisted coding and documentation.
+- llm.nvim <https://github.com/huggingface/llm.nvim>Combine crawler.nvim with llm.nvim to pull web content and use it for generating or enhancing documentation with the power of large language models.
+
+
+DATA PROCESSING ~
+
+- glazed <https://github.com/go-go-golems/glazed>Use crawler.nvim to pull structured data from web pages, then process and transform this data using glazed CLI tools directly within Neovim.
+
+These integrations allow you to seamlessly incorporate web content into your
+workflows, whether for documentation, data analysis, or AI-assisted
+development.
+
+
+REQUIREMENTS                      *my-template-docs-crawler.nvim-requirements*
+
+- Neovim >= 0.7.0
+- plenary.nvim <https://github.com/nvim-lua/plenary.nvim>
+
+
+LICENSE                                *my-template-docs-crawler.nvim-license*
+
+MIT
+
+
+CONTRIBUTING                      *my-template-docs-crawler.nvim-contributing*
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+
+ACKNOWLEDGEMENTS              *my-template-docs-crawler.nvim-acknowledgements*
+
+This plugin would not be possible without the following projects:
+
+- yoheinakajima/jsondr <https://github.com/yoheinakajima/jsondr>A powerful tool for rendering JSON data, which is used in our JSON rendering functionality.
+- Jina Reader API <https://jina.ai/reader>The Jina Reader API is used for our Markdown rendering capabilities. For more information on how to use the Jina Reader API, please refer to their documentation <https://jina.ai/reader>.
+
+We are grateful for these tools and APIs that have made crawler.nvim possible.
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
